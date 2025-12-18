@@ -1,2 +1,2 @@
-# obelisk
+# OBELISK
 Omnibus Bootable Emulation Layer for Inferred System Kernels
