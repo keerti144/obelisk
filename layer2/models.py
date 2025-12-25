@@ -29,6 +29,7 @@ class EntryPoint:
 @dataclass
 class SystemProfile:
     # Platform inference
+    artifact_root: str 
     platform_candidates: List[PlatformCandidate]
 
     # CPU & execution model (conservative)

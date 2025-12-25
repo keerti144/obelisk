@@ -1,6 +1,5 @@
 from layer2.models import SystemProfile, PlatformCandidate, EntryPoint
 
-
 def entry_confidence(path, inspection):
     score = 0.3
 
@@ -59,6 +58,7 @@ def synthesize(artifact, scan, candidates, inspection, inference):
     # Final SystemProfile
     # --------------------------------------
     return SystemProfile(
+        artifact_root=artifact.normalized_path,
         platform_candidates=platforms,
 
         cpu_class=inference["cpu_class"],

@@ -10,8 +10,7 @@ def synthesize(system_profile):
     ).path
 
     adapter = DOSBoxAdapter()
+    plans = adapter.generate_variants(machine, entry, system_profile.artifact_root)
 
-    return {
-        "strict": adapter.synthesize(machine, entry, mode="strict"),
-        "lenient": adapter.synthesize(machine, entry, mode="lenient")
-    }
+    # Always return ordered
+    return sorted(plans, key=lambda p: p.priority)

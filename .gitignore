@@ -10,6 +10,8 @@ artifacts/
 artifact_descriptor.txt
 artifact_profile.txt
 artifact_launch_plans.txt
+artifact_execution_results.txt
 
 # Generated emulator configs
 generated_dosbox_*.conf
+dosbox*.conf

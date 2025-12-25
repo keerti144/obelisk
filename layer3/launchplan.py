@@ -7,4 +7,7 @@ class LaunchPlan:
     entry_point: str
     timeout: int
     confidence: float
-    mode: str             # "strict" | "lenient"
+
+    # NEW
+    variant: str        # human-readable label
+    priority: int       # lower = try first
