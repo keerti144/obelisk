@@ -4,7 +4,7 @@ from layer1.ingest import ingest
 from dataclasses import asdict
 import json
 
-artifact = ingest("input/DoomTest2")
+artifact = ingest("input/MarioGG")
 artifact_dict = asdict(artifact)
 with open("artifact_descriptor.txt", "w", encoding="utf-8") as f:
     json.dump(artifact_dict, f, indent=2)
