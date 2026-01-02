@@ -4,6 +4,7 @@ from dataclasses import dataclass
 class LaunchPlan:
     emulator: str
     config_path: str
+    artifact_root: str
     entry_point: str
     timeout: int
     confidence: float

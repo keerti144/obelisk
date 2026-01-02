@@ -6,6 +6,9 @@ __pycache__/
 layer2_debug/
 artifacts/
 
+# Layer output
+layer4_output/
+
 # Generated outputs
 artifact_descriptor.txt
 artifact_profile.txt
