@@ -53,6 +53,15 @@ SOUND_SIGNATURES = {
     "gus": ["gravis", "ultrasound", "gus"]
 }
 
+SOUND_AWARE_TOKENS = [
+    "sound",
+    "music",
+    "volume",
+    "effects_volume",
+    "music_volume",
+    "digital sound"
+]
+
 GRAPHICS_SIGNATURES = {
     "vga": ["vga", "320x200"],
     "ega": ["ega"],
@@ -71,6 +80,7 @@ def inspect_candidates(artifact, candidates):
         "pm_evidence": [],           # list of {file, sig, strength}
         "graphics_evidence": set(),
         "sound_evidence": set(),
+        "sound_awareness_evidence": set()
     }
 
     for rel in candidates:
@@ -153,8 +163,13 @@ def inspect_candidates(artifact, candidates):
                 if t in text:
                     results["graphics_evidence"].add(mode)
 
+        for token in SOUND_AWARE_TOKENS:
+            if token in text:
+                results["sound_awareness_evidence"].add(token)
+
     # Normalize sets → lists
     results["sound_evidence"] = list(results["sound_evidence"])
+    results["sound_awareness_evidence"] = list(results["sound_awareness_evidence"])
     results["graphics_evidence"] = list(results["graphics_evidence"])
 
     return results

@@ -18,5 +18,8 @@ class ExecutionProfile:
     # Configuration metadata (input, not inference)
     config: Dict[str, str]
 
+    # Sound stuff
+    sound_outcome: Optional[str]
+
     # Optional diagnostics (non-semantic)
     host_telemetry: Dict[str, object]

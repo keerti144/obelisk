@@ -1,4 +1,4 @@
-from layer2.models import SystemProfile, PlatformCandidate, EntryPoint
+from layer2.models import SystemProfile, PlatformCandidate, EntryPoint, SoundProfile
 
 def entry_confidence(path, inspection):
     score = 0.3
@@ -54,6 +54,13 @@ def synthesize(artifact, scan, candidates, inspection, inference):
             e["file"] for e in inspection.get("pm_evidence", [])
         })
 
+    sound_profile = SoundProfile(
+        requirement=inference["sound"]["requirement"],
+        supported_devices=inference["sound"]["devices"],
+        confidence=inference["sound"]["confidence"],
+        evidence=inspection.get("sound_evidence", [])
+    )
+    
     # --------------------------------------
     # Final SystemProfile
     # --------------------------------------
@@ -66,7 +73,7 @@ def synthesize(artifact, scan, candidates, inspection, inference):
 
         # Layer 2 assertions are conservative
         graphics=["text"],
-        sound=[],
+        sound=sound_profile,
 
         # Evidence-only fields
         graphics_evidence=inspection.get("graphics_evidence", []),

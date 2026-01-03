@@ -37,17 +37,28 @@ def resolve_machine(system_profile) -> CanonicalMachine:
         graphics = "vga"
 
     # ---- Sound ----
-    if "sb16" in system_profile.sound_evidence:
-        sound = ["sb16"]
-    elif "adlib" in system_profile.sound_evidence:
-        sound = ["adlib"]
-    else:
+    sound_profile = system_profile.sound
+
+    if sound_profile.requirement == "absent":
         sound = []
+        sound_required = False
+
+    else:
+        # optional OR required
+        if "sb16" in sound_profile.supported_devices:
+            sound = ["sb16"]
+        elif "adlib" in sound_profile.supported_devices:
+            sound = ["adlib"]
+        else:
+            sound = []
+
+        sound_required = (sound_profile.requirement == "required")
 
     return CanonicalMachine(
         cpu=cpu,
         memory_mb=memory_mb,
         graphics=graphics,
         sound=sound,
+        sound_required=sound_required,
         dos_extender=dos_extender
     )

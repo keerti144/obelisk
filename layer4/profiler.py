@@ -73,6 +73,19 @@ class ExecutionProfiler:
         # ---- Config metadata (input, not execution) ----
         config = parse_dosbox_config(plan.config_path)
 
+        sound_outcome = None
+
+        sound_enabled = config.get("sound_enabled", False)
+
+        if not sound_enabled:
+            if started and not finished:
+                # Entrypoint reached, but program never completed
+                sound_outcome = "init_block"
+
+            elif started and finished:
+                # Program ran fine without sound
+                sound_outcome = "tolerated"
+
         # ---- Build final profile ----
         return ExecutionProfile(
             emulator="dosbox",
@@ -85,5 +98,6 @@ class ExecutionProfiler:
                 "errorlevel": errorlevel
             },
             config=config,
+            sound_outcome=sound_outcome,
             host_telemetry=host_telemetry
         )

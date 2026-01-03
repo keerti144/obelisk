@@ -58,6 +58,7 @@ def infer_requirements(scan, inspection):
     # CPU & memory inference
     # --------------------------------------
     pm_evidence = inspection.get("pm_evidence", [])
+    result["sound"] = None
 
     if _eval_protected_mode(pm_evidence):
         # Protected mode implies >= 386
@@ -88,4 +89,34 @@ def infer_requirements(scan, inspection):
                 "confidence": 0.3
             }
 
+    sound = infer_sound_profile(inspection)
+    result["sound"] = sound
+
     return result
+
+def infer_sound_profile(inspection):
+    hardware = inspection.get("sound_evidence", [])
+    awareness = inspection.get("sound_awareness_evidence", [])
+
+    # Case 1: no sound awareness at all
+    if not hardware and not awareness:
+        return {
+            "requirement": "absent",
+            "devices": [],
+            "confidence": 0.9
+        }
+
+    # Case 2: sound-aware, but backend unknown
+    if not hardware and awareness:
+        return {
+            "requirement": "optional",
+            "devices": [],
+            "confidence": 0.4
+        }
+
+    # Case 3: sound backend evidence exists
+    return {
+        "requirement": "optional",
+        "devices": hardware,
+        "confidence": 0.6
+    }

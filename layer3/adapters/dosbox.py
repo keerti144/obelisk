@@ -9,7 +9,8 @@ class DOSBoxAdapter(EmulatorAdapter):
         self,
         machine: CanonicalMachine,
         entry_point: str,
-        artifact_root: str
+        artifact_root: str,
+        system_profile
     ) -> List[LaunchPlan]:
 
         plans = []
@@ -39,6 +40,32 @@ class DOSBoxAdapter(EmulatorAdapter):
                 )
             )
 
+        # Variant S: Sound Probe
+        sound = system_profile.sound
+
+        sound = system_profile.sound
+
+        sound_probe = (
+            sound is not None and
+            sound.requirement == "optional" and
+            sound.confidence < 0.5 and
+            len(sound.supported_devices) == 0
+        )
+
+        if sound_probe:
+            plans.append(
+                self._make_plan(
+                    machine,
+                    entry_point,
+                    artifact_root,
+                    variant="sound-probe",
+                    priority=2,
+                    cycles="3000",
+                    sound=True,     # force sound ON
+                    svga=False
+                )
+            )
+
         # Variant 3: auto CPU (less strict)
         plans.append(
             self._make_plan(
@@ -62,6 +89,7 @@ class DOSBoxAdapter(EmulatorAdapter):
                 svga=True
             )
         )
+
 
         return plans
 
@@ -93,7 +121,8 @@ class DOSBoxAdapter(EmulatorAdapter):
             f.write("\n")
 
             f.write("[sblaster]\n")
-            if sound and machine.sound:
+            if sound:
+                # Exploratory or assertive sound: always enable a backend
                 f.write("sbtype=sb16\n")
             else:
                 f.write("sbtype=none\n")

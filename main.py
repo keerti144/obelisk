@@ -4,7 +4,7 @@ from layer1.ingest import ingest
 from dataclasses import asdict
 import json
 
-artifact = ingest("input/Mario")
+artifact = ingest("input/WARKURRE")
 artifact_dict = asdict(artifact)
 with open("artifact_descriptor.txt", "w", encoding="utf-8") as f:
     json.dump(artifact_dict, f, indent=2)
@@ -68,4 +68,8 @@ for profile in profiles:
     out_file = out_dir / f"{profile.variant}_execution_profile.json"
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(asdict(profile), f, indent=2)
+    print()
+    print(profile.variant, profile.config["sound_enabled"], profile.sound_outcome)
+    print()
+
 
