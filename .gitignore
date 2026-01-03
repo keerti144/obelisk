@@ -8,6 +8,7 @@ artifacts/
 
 # Layer output
 layer4_output/
+layer5_output/
 
 # Generated outputs
 artifact_descriptor.txt
