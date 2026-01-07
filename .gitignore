@@ -1,4 +1,17 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Layer debug / artifacts
 layer2_debug/
+artifacts/
+
+# Generated outputs
 artifact_descriptor.txt
 artifact_profile.txt
-artifacts/
+artifact_launch_plans.txt
+artifact_execution_results.txt
+
+# Generated emulator configs
+generated_dosbox_*.conf
+dosbox*.conf

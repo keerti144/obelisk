@@ -4,7 +4,6 @@ def entry_confidence(path, inspection):
     score = 0.3
 
     size = inspection.get("exe_sizes", {}).get(path, 0)
-
     if size > 300_000:
         score += 0.4
 
@@ -16,10 +15,17 @@ def entry_confidence(path, inspection):
 
 
 def synthesize(artifact, scan, candidates, inspection, inference):
+    # --------------------------------------
+    # Platform candidates
+    # --------------------------------------
     platforms = [
-        PlatformCandidate(p, c) for p, c in inference["platforms"]
+        PlatformCandidate(platform=p, confidence=c)
+        for p, c in inference["platforms"]
     ]
 
+    # --------------------------------------
+    # Entry points
+    # --------------------------------------
     entry_points = [
         EntryPoint(
             path=p,
@@ -28,31 +34,49 @@ def synthesize(artifact, scan, candidates, inspection, inference):
         for p in candidates
     ]
 
+    # --------------------------------------
+    # Raw evidence (for audit & Layer 3)
+    # --------------------------------------
     evidence = {
-        "dos_extender": inspection["dos_extender"],
-        "graphics": inspection["graphics"],
-        "sound": inspection["sound"]
+        "pm_evidence": inspection.get("pm_evidence", []),
+        "graphics_evidence": inspection.get("graphics_evidence", []),
+        "sound_evidence": inspection.get("sound_evidence", [])
     }
 
+    # --------------------------------------
+    # Execution-relevant evidence
+    # (only derived from confident inference)
+    # --------------------------------------
     execution_evidence = {}
 
-    if inspection.get("dos_extender"):
-        execution_evidence["protected_mode"] = inspection.get(
-            "protected_mode_evidence", []
-        )
-        execution_evidence["requires_386"] = inspection.get(
-            "protected_mode_evidence", []
-        )
+    if inference["memory_model"] == "protected":
+        execution_evidence["requires_386"] = list({
+            e["file"] for e in inspection.get("pm_evidence", [])
+        })
 
+    # --------------------------------------
+    # Final SystemProfile
+    # --------------------------------------
     return SystemProfile(
+        artifact_root=artifact.normalized_path,
         platform_candidates=platforms,
+
         cpu_class=inference["cpu_class"],
         memory_model=inference["memory_model"],
-        graphics=inference["graphics"],
-        sound=inference["sound"],
+
+        # Layer 2 assertions are conservative
+        graphics=["text"],
+        sound=[],
+
+        # Evidence-only fields
+        graphics_evidence=inspection.get("graphics_evidence", []),
+        sound_evidence=inspection.get("sound_evidence", []),
+
         entry_points=entry_points,
+
         constraints=inference["constraints"],
         negative_constraints=inference["negative"],
+
         evidence=evidence,
         execution_evidence=execution_evidence
     )
