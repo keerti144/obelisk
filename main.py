@@ -12,6 +12,7 @@ with open("artifact_descriptor.txt", "w", encoding="utf-8") as f:
 print("Artifact descriptor written to artifact_descriptor.txt")
 
 #V2.0 - Layer 2 (System Inference)
+
 from layer2.analyze import analyze
 
 profile = analyze(artifact)
@@ -49,14 +50,34 @@ for plan in plans:
 
 # V4.0 – Layer 4 (Execution & Validation)
 
-from layer4.execute import execute
+from layer4.run import run_layer4
+from pathlib import Path
 
-results = execute(plans)
+profiles = run_layer4(plans)
 
-layer4_output = [asdict(r) for r in results]
+print("\n=== Layer 4 Execution Profiles ===\n")
 
-with open("artifact_execution_results.txt", "w", encoding="utf-8") as f:
-    json.dump(layer4_output, f, indent=2)
+for profile in profiles:
+    print(json.dumps(asdict(profile), indent=2))
 
-print("\n=== Layer 4 Execution Results ===")
-print(json.dumps(layer4_output, indent=2))
+out_dir = Path("layer4_output")
+out_dir.mkdir(exist_ok=True)
+
+
+for profile in profiles:
+    out_file = out_dir / f"{profile.variant}_execution_profile.json"
+    with open(out_file, "w", encoding="utf-8") as f:
+        json.dump(asdict(profile), f, indent=2)
+
+# V5.0 – Layer 5 (Telemetry & Reasoning)
+
+from layer5.run import run_layer5
+
+layer5_result = run_layer5(profiles)
+
+print("\n=== Layer 5 Final Result ===\n")
+print("Chosen configuration:", layer5_result.chosen_variant)
+print("\nExplanation:")
+print(layer5_result.explanation)
+
+

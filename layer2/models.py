@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import List, Dict, Literal
 
 
 # --------------------------------------
@@ -27,6 +27,13 @@ class EntryPoint:
 # --------------------------------------
 
 @dataclass
+class SoundProfile:
+    requirement: Literal["required", "optional", "absent"]
+    supported_devices: List[str]
+    confidence: float
+    evidence: List[str]
+
+@dataclass
 class SystemProfile:
     # Platform inference
     artifact_root: str 
@@ -38,7 +45,7 @@ class SystemProfile:
 
     # Layer-2 assertions (minimal)
     graphics: List[str]    # always ["text"]
-    sound: List[str]       # empty; sound is runtime-optional
+    sound: SoundProfile    # empty; sound is runtime-optional
 
     # Evidence only (non-binding)
     graphics_evidence: List[str]
@@ -54,3 +61,4 @@ class SystemProfile:
     # Raw evidence & derived execution hints (for audit / Layer 3)
     evidence: Dict[str, list]
     execution_evidence: Dict[str, list]
+

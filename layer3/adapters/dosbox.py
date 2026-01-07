@@ -9,7 +9,8 @@ class DOSBoxAdapter(EmulatorAdapter):
         self,
         machine: CanonicalMachine,
         entry_point: str,
-        artifact_root: str
+        artifact_root: str,
+        system_profile
     ) -> List[LaunchPlan]:
 
         plans = []
@@ -39,6 +40,32 @@ class DOSBoxAdapter(EmulatorAdapter):
                 )
             )
 
+        # Variant S: Sound Probe
+        sound = system_profile.sound
+
+        sound = system_profile.sound
+
+        sound_probe = (
+            sound is not None and
+            sound.requirement == "optional" and
+            sound.confidence < 0.5 and
+            len(sound.supported_devices) == 0
+        )
+
+        if sound_probe:
+            plans.append(
+                self._make_plan(
+                    machine,
+                    entry_point,
+                    artifact_root,
+                    variant="sound-probe",
+                    priority=2,
+                    cycles="3000",
+                    sound=True,     # force sound ON
+                    svga=False
+                )
+            )
+
         # Variant 3: auto CPU (less strict)
         plans.append(
             self._make_plan(
@@ -62,6 +89,7 @@ class DOSBoxAdapter(EmulatorAdapter):
                 svga=True
             )
         )
+
 
         return plans
 
@@ -93,19 +121,55 @@ class DOSBoxAdapter(EmulatorAdapter):
             f.write("\n")
 
             f.write("[sblaster]\n")
-            if sound and machine.sound:
+            if sound:
+                # Exploratory or assertive sound: always enable a backend
                 f.write("sbtype=sb16\n")
             else:
                 f.write("sbtype=none\n")
 
-            f.write("\n[autoexec]\n")
+            '''f.write("\n[autoexec]\n")
+            f.write("@echo off\n")
             f.write(f'mount c "{artifact_root}"\n')
             f.write("c:\n")
+
+            # Sentinel: entrypoint reached
+            f.write("echo START > c:\\obelisk_started.txt\n")
+
+            # Run the program normally (NO redirection)
             f.write(f"{entry_point}\n")
+
+            # Capture DOS ERRORLEVEL
+            f.write("echo %errorlevel% > c:\\obelisk_errorlevel.txt\n")
+
+            # Sentinel: program returned to DOS
+            f.write("echo END > c:\\obelisk_finished.txt\n")'''
+
+            '''f.write("\n[autoexec]\n")
+            f.write("@echo off\n")
+            f.write(f'mount c "{artifact_root}"\n')
+            f.write("c:\n")
+
+            # Absolute proof that AUTOEXEC ran
+            f.write("echo AUTOEXEC_RAN > c:\\__AUTOEXEC_PROOF.txt\n")
+
+            # Keep DOSBox open so you can see it
+            f.write("echo If you see this, the config is being used.\n")
+            f.write("pause\n")'''
+
+            f.write("\n[autoexec]\n")
+            f.write("@echo off\n")
+            f.write(f'mount c "{artifact_root}"\n')
+            f.write("c:\n")
+
+            f.write("echo START > C:\STARTED.TXT\n")
+            f.write(f"{entry_point}\n")
+            f.write("echo %errorlevel% > C:\ERRLVL.TXT\n")
+            f.write("echo END > C:\FINISH.TXT\n")
 
         return LaunchPlan(
             emulator="dosbox",
             config_path=conf_path,
+            artifact_root=artifact_root,
             entry_point=entry_point,
             timeout=20,
             confidence=0.6,

@@ -10,4 +10,5 @@ class CanonicalMachine:
     memory_mb: int
     graphics: str         # "text", "vga", "svga"
     sound: List[str]      # ["adlib"], ["sb16"]
+    sound_required: bool
     dos_extender: bool
