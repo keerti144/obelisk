@@ -17,3 +17,4 @@ class ArtifactDescriptor:
     file_types: List[str]
     container: bool
     disk_image: bool
+    bootable:bool 
