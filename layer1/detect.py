@@ -37,3 +37,28 @@ def detect_file_type(path: str) -> str:
     if magic != "unknown":
         return magic
     return detect_extension(path)
+
+def detect_bootable(path: str) -> bool:
+    """
+    Layer 1 definition of bootable:
+    The image contains any known firmware boot signature
+    within the first bounded region.
+    """
+    try:
+        with open(path, "rb") as f:
+            data = f.read(64 * 1024)  # first 64 KB only
+
+        # 1️⃣ BIOS boot sector / MBR signature
+        if len(data) >= 512 and data[510:512] == b"\x55\xAA":
+            return True
+
+        # 2️⃣ El Torito CD-ROM boot catalog signature
+        if b"EL TORITO SPECIFICATION" in data:
+            return True
+
+        return False
+
+    except Exception:
+        return False
+
+
