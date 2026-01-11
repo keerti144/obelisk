@@ -12,3 +12,8 @@ class CanonicalMachine:
     sound: List[str]      # ["adlib"], ["sb16"]
     sound_required: bool
     dos_extender: bool
+
+    # NEW (PCem-critical)
+    execution_mode: str
+    needs_bios: bool
+    needs_boot_disk: bool

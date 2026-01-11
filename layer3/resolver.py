@@ -54,11 +54,19 @@ def resolve_machine(system_profile) -> CanonicalMachine:
 
         sound_required = (sound_profile.requirement == "required")
 
+    execution_mode = system_profile.execution_mode
+
+    needs_bios = (execution_mode == "bootable_os")
+    needs_boot_disk = (execution_mode == "bootable_os")
+
     return CanonicalMachine(
         cpu=cpu,
         memory_mb=memory_mb,
         graphics=graphics,
         sound=sound,
         sound_required=sound_required,
-        dos_extender=dos_extender
+        dos_extender=dos_extender,
+        execution_mode=execution_mode,
+        needs_bios=needs_bios,
+        needs_boot_disk=needs_boot_disk
     )
