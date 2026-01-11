@@ -19,3 +19,7 @@ artifact_execution_results.txt
 # Generated emulator configs
 generated_dosbox_*.conf
 dosbox*.conf
+
+# Test suites
+obelisk_layer1_tests/
+obelisk_layer2_tests/

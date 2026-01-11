@@ -24,15 +24,35 @@ def synthesize(artifact, scan, candidates, inspection, inference):
     ]
 
     # --------------------------------------
+    # Execution mode inference (PCem-critical)
+    # --------------------------------------
+    execution_mode = "unknown"
+    
+    if artifact.disk_image:
+        execution_mode = "bootable_os"
+
+    elif inspection.get("pe_exe"):
+        execution_mode = "bootable_os"
+
+    elif candidates:
+        execution_mode = "program"
+
+    else:
+        execution_mode = "unknown"
+
+    # --------------------------------------
     # Entry points
     # --------------------------------------
-    entry_points = [
-        EntryPoint(
-            path=p,
-            confidence=entry_confidence(p, inspection)
-        )
-        for p in candidates
-    ]
+    if execution_mode == "bootable_os":
+        entry_points = []
+    else:
+        entry_points = [
+            EntryPoint(
+                path=p,
+                confidence=entry_confidence(p, inspection)
+            )
+            for p in candidates
+        ]
 
     # --------------------------------------
     # Raw evidence (for audit & Layer 3)
@@ -60,7 +80,7 @@ def synthesize(artifact, scan, candidates, inspection, inference):
         confidence=inference["sound"]["confidence"],
         evidence=inspection.get("sound_evidence", [])
     )
-    
+
     # --------------------------------------
     # Final SystemProfile
     # --------------------------------------
@@ -85,5 +105,6 @@ def synthesize(artifact, scan, candidates, inspection, inference):
         negative_constraints=inference["negative"],
 
         evidence=evidence,
-        execution_evidence=execution_evidence
+        execution_evidence=execution_evidence,
+        execution_mode=execution_mode
     )

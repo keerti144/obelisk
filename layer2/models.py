@@ -62,3 +62,5 @@ class SystemProfile:
     evidence: Dict[str, list]
     execution_evidence: Dict[str, list]
 
+    execution_mode: str  # "program" | "bootable_os" | "unknown"
+
